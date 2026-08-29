@@ -684,3 +684,147 @@ p {
   font-size: 15px;
   line-height: 1.4;
 }
+
+/* =====================
+   RECIPE CARD (inline recipe view — #recipe-editor-body)
+===================== */
+
+.recipe-card {
+  background: #f2f2ef;
+  border-radius: 14px;
+  padding: 16px;
+  margin: 10px 5px 20px 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.recipe-card h4 {
+  margin: 15px 5px 8px 5px;
+  padding: 0;
+  font-family: 'Playfair Display', serif;
+}
+
+.recipe-card h4:first-child {
+  margin-top: 5px;
+}
+
+/* Batch counter — oval pill with round +/- buttons */
+.servings-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: fit-content;
+  margin: 10px auto 4px auto;
+  padding: 6px 18px;
+  border: 2px solid var(--gold);
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.servings-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--ink);
+  background: #ffffff;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.servings-btn:active {
+  opacity: 0.6;
+}
+
+.servings-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+  min-width: 16px;
+  text-align: center;
+}
+
+.servings-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  text-align: center;
+  color: var(--ink);
+  opacity: 0.6;
+  margin-bottom: 10px;
+}
+
+/* Ingredients */
+.ingredients-list {
+  list-style: disc;
+  padding-left: 22px;
+  margin: 0 5px 10px 5px;
+}
+
+.ingredients-list li {
+  font-family: 'Crimson Pro', serif;
+  font-size: 15px;
+  padding: 3px 0;
+}
+
+/* Numbered steps — round-bordered number, space between each step */
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 5px 5px 5px 5px;
+}
+
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.step-number {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.step-text {
+  font-family: 'Crimson Pro', serif;
+  font-size: 15px;
+  text-indent: 0;
+  padding: 2px 0 0 0;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Notes */
+.recipe-notes {
+  margin: 15px 5px 5px 5px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border-left: 4px solid var(--gold);
+  border-radius: 6px;
+}
+
+.recipe-notes h4 {
+  margin: 0 0 5px 0;
+}
+
+.recipe-notes p {
+  text-indent: 0;
+  padding: 0;
+  font-style: italic;
+  font-size: 14px;
+}

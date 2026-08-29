@@ -41,6 +41,7 @@ const CATEGORIES = [
   { id: 'hard_and_soft_candy',      icon: '🍬', label: 'Hard & Soft Candy' },
   { id: 'meats',                    icon: '🥩', label: 'Meats' },
   { id: 'pastas',                   icon: '🍝', label: 'Pastas & Rice' },
+  { id: 'pickles',                  icon: '🥒', label: 'Pickles & Preserves' },
   { id: 'salads',                   icon: '🥗', label: 'Salads' },
   { id: 'soups_and_stews',          icon: '🍲', label: 'Soups & Stews' },
   { id: 'vegetables',               icon: '🥦', label: 'Vegetable Dishes' },
@@ -53,6 +54,7 @@ let open_subcat = {}; // { cat_id: sub_idx_or_'custom' }
 
 let engine_current_recipe = null;
 let engine_current_cat_name = null;
+let engine_batch_count = 1;
 
 
 // ── SECTION 2: INIT ─────────────────────────────────────────────
@@ -240,6 +242,7 @@ window.open_recipe_view_by_lookup = open_recipe_view_by_lookup;
 function open_recipe_view(recipe, icon, cat_name) {
   engine_current_recipe = recipe;
   engine_current_cat_name = cat_name;
+  engine_batch_count = 1;
 
   document.getElementById('notes-list-view').style.display = 'none';
   document.getElementById('recipe-editor-view').style.display = 'block';
@@ -247,20 +250,62 @@ function open_recipe_view(recipe, icon, cat_name) {
   document.getElementById('recipe-title-display').textContent = (icon ? icon + ' ' : '') + recipe.name;
   set_header_title('🍽️  Recipe :');
 
-  let html = '';
-  html += `<h4>Serving Size : ${recipe.servings}</h4>`;
-  html += '<h4>Ingredients :</h4><ul>';
-  (recipe.ingredients || []).forEach((ing) => { html += `<li>${ing}</li>`; });
-  html += '</ul>';
-  html += '<h4>Preparation :</h4>';
-  html += `<p>${recipe.prep}</p>`;
-  html += '<button class="orange-btn" onclick="save_to_favorites_cb()">Save</button>';
-  html += '<button class="orange-btn" onclick="open_plan_popup_cb()">Plan</button>';
-
-  document.getElementById('recipe-editor-body').innerHTML = html;
+  document.getElementById('recipe-editor-body').innerHTML = render_recipe_card(recipe);
   show_back_btn();
 }
 window.open_recipe_view = open_recipe_view;
+
+function render_recipe_card(recipe) {
+  let html = '<div class="recipe-card">';
+
+  html += `<h4>Serving Size : ${recipe.servings}</h4>`;
+
+  html += `
+    <div class="servings-box">
+      <button class="servings-btn" onclick="adjust_batches(-1)">−</button>
+      <span class="servings-count" id="batch_count">${engine_batch_count}</span>
+      <button class="servings-btn" onclick="adjust_batches(1)">+</button>
+    </div>
+    <div class="servings-label">batches</div>
+  `;
+
+  html += '<h4>Ingredients :</h4><ul class="ingredients-list">';
+  (recipe.ingredients || []).forEach((ing) => { html += `<li>${ing}</li>`; });
+  html += '</ul>';
+
+  html += '<h4>Preparation :</h4><div class="steps-list">';
+  if (Array.isArray(recipe.steps) && recipe.steps.length > 0) {
+    recipe.steps.forEach((step, idx) => {
+      html += `
+        <div class="step-item">
+          <span class="step-number">${idx + 1}</span>
+          <p class="step-text">${step}</p>
+        </div>
+      `;
+    });
+  } else if (recipe.prep) {
+    // fallback for recipe files not yet converted to a steps array
+    html += `<div class="step-item"><p class="step-text">${recipe.prep}</p></div>`;
+  }
+  html += '</div>';
+
+  if (recipe.notes) {
+    html += `<div class="recipe-notes"><h4>Notes :</h4><p>${recipe.notes}</p></div>`;
+  }
+
+  html += '<button class="orange-btn" onclick="save_to_favorites_cb()">Save</button>';
+  html += '<button class="orange-btn" onclick="open_plan_popup_cb()">Plan</button>';
+
+  html += '</div>'; // .recipe-card
+  return html;
+}
+
+function adjust_batches(delta) {
+  engine_batch_count = Math.max(1, Math.min(99, engine_batch_count + delta));
+  const el = document.getElementById('batch_count');
+  if (el) el.textContent = engine_batch_count;
+}
+window.adjust_batches = adjust_batches;
 
 function back_to_list() {
   document.getElementById('recipe-editor-view').style.display = 'none';
@@ -289,7 +334,8 @@ function save_to_favorites_cb() {
       catName: engine_current_cat_name,
       servings: engine_current_recipe.servings,
       ingredients: engine_current_recipe.ingredients,
-      prep: engine_current_recipe.prep
+      steps: engine_current_recipe.steps,
+      notes: engine_current_recipe.notes
     });
     localStorage.setItem('mealplanner_favorites', JSON.stringify(favs));
   }
@@ -301,7 +347,7 @@ function open_plan_popup_cb() {
   localStorage.setItem('mealplanner_pending_recipe', JSON.stringify({
     name: engine_current_recipe.name,
     ingredients: engine_current_recipe.ingredients,
-    steps: engine_current_recipe.prep
+    steps: engine_current_recipe.steps
   }));
   window.location.href = 'meal_planner.html';
 }
@@ -407,8 +453,10 @@ function save_created_recipe() {
     return;
   }
 
+  const steps = prep.split(/\n+/).map(s => s.trim()).filter(Boolean);
+
   const favs = JSON.parse(localStorage.getItem('mealplanner_favorites') || '[]');
-  favs.push({ name, catName: 'My Recipes', servings, ingredients, prep });
+  favs.push({ name, catName: 'My Recipes', servings, ingredients, steps });
   localStorage.setItem('mealplanner_favorites', JSON.stringify(favs));
 
   if (msgEl) msgEl.textContent = 'Recipe saved to your favorites!';
@@ -463,8 +511,10 @@ function save_add_recipe_modal() {
     return;
   }
 
+  const steps = prep.split(/\n+/).map(s => s.trim()).filter(Boolean);
+
   const stored = JSON.parse(localStorage.getItem(MY_RECIPES_KEY) || '[]');
-  stored.push({ name, servings, ingredients, prep });
+  stored.push({ name, servings, ingredients, steps });
   localStorage.setItem(MY_RECIPES_KEY, JSON.stringify(stored));
 
   if (msgEl) msgEl.textContent = 'Recipe added!';
