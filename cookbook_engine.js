@@ -41,7 +41,7 @@ const CATEGORIES = [
   { id: 'hard_and_soft_candy',      icon: '🍬', label: 'Hard & Soft Candy' },
   { id: 'meats',                    icon: '🥩', label: 'Meats' },
   { id: 'pastas',                   icon: '🍝', label: 'Pastas & Rice' },
-  { id: 'pickles',                  icon: '🥒', label: 'Pickles & Preserves' },
+  { id: 'pickles_and_preserves',    icon: '🥒', label: 'Pickles & Preserves' },
   { id: 'salads',                   icon: '🥗', label: 'Salads' },
   { id: 'soups_and_stews',          icon: '🍲', label: 'Soups & Stews' },
   { id: 'vegetables',               icon: '🥦', label: 'Vegetable Dishes' },

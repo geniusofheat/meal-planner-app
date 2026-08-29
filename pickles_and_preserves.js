@@ -1,4 +1,4 @@
-const pickles_data = [
+const pickles_and_preserves = [
 
   {
     "id": "pickles",
@@ -260,7 +260,7 @@ function toggleCategory(catId) {
     return;
   }
 
-  var cat = pickles_data.find(function(c) { return c.id === catId; });
+  var cat = pickles_and_preserves.find(function(c) { return c.id === catId; });
   if (!cat) return;
 
   if (ul.innerHTML === '') {
